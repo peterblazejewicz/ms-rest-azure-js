@@ -73,12 +73,12 @@ function createDefaultHttpPipelineOptions(credentials?: msRest.ServiceClientCred
  * @param {AzureServiceClientOptions} options - The parameter options used by AzureServiceClient
  */
 export class AzureServiceClient extends msRest.ServiceClient {
-  acceptLanguage: string = Constants.DEFAULT_LANGUAGE;
-  generateClientRequestId = true;
-  longRunningOperationRetryTimeoutInSeconds = 30;
-  rpRegistrationRetryTimeoutInSeconds = 30;
+  public acceptLanguage: string = Constants.DEFAULT_LANGUAGE;
+  public generateClientRequestId = true;
+  public longRunningOperationRetryTimeoutInSeconds = 30;
+  public rpRegistrationRetryTimeoutInSeconds = 30;
 
-  constructor(credentials: msRest.ServiceClientCredentials, options?: AzureServiceClientOptions) {
+  constructor(credentials: msRest.ServiceClientCredentials, public subscriptionId: string, options?: AzureServiceClientOptions) {
     super(msRest.createDefaultHttpPipeline(createDefaultHttpPipelineOptions(credentials, options)));
 
     if (options) {
