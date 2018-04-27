@@ -16,6 +16,14 @@ const Constants = {
   },
 
   /**
+   * The default language in the request header.
+   *
+   * @const
+   * @type {string}
+   */
+  DEFAULT_LANGUAGE: "en-us",
+
+  /**
    * The ms-rest-azure version.
    * @const
    * @type {string}

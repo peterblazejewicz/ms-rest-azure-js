@@ -2,16 +2,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
 import * as msRest from "ms-rest-js";
-import { createDefaultAzureHttpPipeline } from "../../lib/azureHttpPipeline";
 import { baseURL } from "../testUtils";
+import { AzureServiceClient } from "../../lib/msRestAzure";
 
-describe("AzureHttpPipeline", () => {
+class TestAzureServiceClient extends AzureServiceClient {
+}
+
+describe("AzureServiceClient", () => {
   it("should send requests when using the default Azure HTTP pipeline", async () => {
-    const httpPipeline: msRest.HttpPipeline = createDefaultAzureHttpPipeline();
+    const azureServiceClient = new TestAzureServiceClient(new msRest.TokenCredentials("MY-FAKE-TOKEN"));
 
     const httpRequest = new msRest.HttpRequest({ method: msRest.HttpMethod.GET, url: `${baseURL}/httpbin-index.html` });
 
-    const httpResponse: msRest.HttpResponse = await httpPipeline.send(httpRequest);
+    const httpResponse: msRest.HttpResponse = await azureServiceClient.sendRequest(httpRequest);
     assert(httpResponse);
 
     assert.strictEqual(httpResponse.statusCode, 200);

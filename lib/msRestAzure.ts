@@ -6,7 +6,5 @@ import Constants from "./util/constants";
 import { CloudError, CloudErrorMapper } from "./cloudError";
 import { BaseResource, BaseResourceMapper } from "./baseResource";
 import { CognitiveServicesCredentials } from "./credentials/cognitiveServicesCredentials";
-import { DefaultAzureHttpPipelineOptions, createDefaultAzureHttpPipeline } from "./azureHttpPipeline";
 export { AzureServiceClient, Constants, CloudError, CloudErrorMapper, BaseResource,
-  BaseResourceMapper, CognitiveServicesCredentials, DefaultAzureHttpPipelineOptions,
-  createDefaultAzureHttpPipeline };
+  BaseResourceMapper, CognitiveServicesCredentials };

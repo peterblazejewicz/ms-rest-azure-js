@@ -4,22 +4,100 @@
 import * as msRest from "ms-rest-js";
 import Constants from "./util/constants";
 import PollingState from "./pollingState";
-import { DefaultAzureHttpPipelineOptions, createDefaultAzureHttpPipeline } from "./azureHttpPipeline";
-import { HttpMethod } from "ms-rest-js";
 const LroStates = Constants.LongRunningOperationStates;
 
-export class AzureServiceClient extends msRest.ServiceClient {
-  public longRunningOperationRetryTimeoutInSeconds = 30;
+/**
+ * Options to be provided while creating the client.
+ */
+export interface AzureServiceClientOptions {
+  /**
+   * @property {string} [options.acceptLanguage] - Gets or sets the preferred language for the response. Default value is: "en-US".
+   */
+  acceptLanguage?: string;
 
   /**
-   * Initializes a new instance of the AzureServiceClient class.
-   * @param {msRest.HttpPipeline | DefaultAzureHttpPipelineOptions} httpPipeline - The HttpPipeline
-   * that this AzureServiceClient will use to send HttpRequests, or the
-   * DefaultAzureHttpPipelineOptions that will be used to create the default HttpPipeline for
-   * AzureServiceClients.
+   * @property {boolean} [options.generateClientRequestId] - When set to true a unique x-ms-client-request-id value
+   * is generated and included in each request. Default is true.
    */
-  constructor(httpPipeline?: msRest.HttpPipeline | DefaultAzureHttpPipelineOptions) {
-    super(httpPipeline instanceof msRest.HttpPipeline ? httpPipeline : createDefaultAzureHttpPipeline(httpPipeline));
+  generateClientRequestId?: boolean;
+
+  /**
+   * @property {number} [options.longRunningOperationRetryTimeoutInSeconds] - Gets or sets the retry timeout in seconds for
+   * Long Running Operations. Default value is 30.
+   */
+  longRunningOperationRetryTimeoutInSeconds?: number;
+
+  /**
+   * @property {number} [rpRegistrationRetryTimeoutInSeconds] - Gets or sets the retry timeout in seconds for
+   * AutomaticRPRegistration. Default value is 30 seconds.
+   */
+  rpRegistrationRetryTimeoutInSeconds?: number;
+
+  /**
+   * @property {bool} [noRetryPolicy] - If set to true, turn off the default retry policy.
+   */
+  noRetryPolicy?: boolean;
+}
+
+function createDefaultHttpPipelineOptions(credentials?: msRest.ServiceClientCredentials, options?: AzureServiceClientOptions): msRest.DefaultHttpPipelineOptions {
+  const result: msRest.DefaultHttpPipelineOptions = {};
+
+  if (credentials) {
+    result.credentials = credentials;
+  }
+
+  if (options) {
+    if (options.generateClientRequestId != undefined) {
+      result.generateClientRequestId = options.generateClientRequestId;
+    }
+
+    if (options.rpRegistrationRetryTimeoutInSeconds != undefined) {
+      result.rpRegistrationRetryTimeoutInSeconds = options.rpRegistrationRetryTimeoutInSeconds;
+    }
+
+    if (options.noRetryPolicy != undefined) {
+      result.addRetryPolicies = !options.noRetryPolicy;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the AzureServiceClient class.
+ * @constructor
+ *
+ * @param {msRest.ServiceClientCredentilas} credentials - ApplicationTokenCredentials or
+ * UserTokenCredentials object used for authentication.
+ * @param {AzureServiceClientOptions} options - The parameter options used by AzureServiceClient
+ */
+export class AzureServiceClient extends msRest.ServiceClient {
+  acceptLanguage: string = Constants.DEFAULT_LANGUAGE;
+  generateClientRequestId = true;
+  longRunningOperationRetryTimeoutInSeconds = 30;
+  rpRegistrationRetryTimeoutInSeconds = 30;
+
+  constructor(credentials: msRest.ServiceClientCredentials, options?: AzureServiceClientOptions) {
+    super(msRest.createDefaultHttpPipeline(createDefaultHttpPipelineOptions(credentials, options)));
+
+    if (options) {
+      if (options.acceptLanguage != undefined) {
+        this.acceptLanguage = options.acceptLanguage;
+      }
+
+      if (options.generateClientRequestId != undefined) {
+        this.generateClientRequestId = options.generateClientRequestId;
+      }
+
+      if (options.longRunningOperationRetryTimeoutInSeconds != undefined) {
+        this.longRunningOperationRetryTimeoutInSeconds = options.longRunningOperationRetryTimeoutInSeconds;
+      }
+
+      if (options.rpRegistrationRetryTimeoutInSeconds != undefined) {
+        this.rpRegistrationRetryTimeoutInSeconds = options.rpRegistrationRetryTimeoutInSeconds;
+      }
+    }
   }
 
   /**
@@ -177,7 +255,7 @@ export class AzureServiceClient extends msRest.ServiceClient {
 
     // Create HTTP request object
     const httpRequest = new msRest.HttpRequest({
-      method: HttpMethod.GET,
+      method: "GET",
       url: requestUrl
     });
 
