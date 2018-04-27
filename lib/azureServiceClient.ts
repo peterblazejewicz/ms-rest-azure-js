@@ -9,7 +9,7 @@ import { HttpMethod } from "ms-rest-js";
 const LroStates = Constants.LongRunningOperationStates;
 
 export class AzureServiceClient extends msRest.ServiceClient {
-  longRunningOperationRetryTimeout = 30;
+  public longRunningOperationRetryTimeoutInSeconds = 30;
 
   /**
    * Initializes a new instance of the AzureServiceClient class.
@@ -46,7 +46,7 @@ export class AzureServiceClient extends msRest.ServiceClient {
       throw new Error(`Unexpected polling status code from long running operation "${initialResponse.statusCode}" for method "${initialRequestMethod}".`);
     }
 
-    const pollingState = new PollingState(initialResponse, this.longRunningOperationRetryTimeout);
+    const pollingState = new PollingState(initialResponse, this.longRunningOperationRetryTimeoutInSeconds);
 
     const resourceUrl: string = initialResponse.request.url;
     while (![LroStates.Succeeded, LroStates.Failed, LroStates.Canceled].some((e) => { return e === pollingState.status; })) {
