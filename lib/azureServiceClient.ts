@@ -37,6 +37,11 @@ export interface AzureServiceClientOptions {
    * @property {bool} [noRetryPolicy] - If set to true, turn off the default retry policy.
    */
   noRetryPolicy?: boolean;
+
+  /**
+   * The package information that will be added as the User-Agent header when running under Node.js.
+   */
+  nodeJsUserAgentPackage?: string;
 }
 
 function createDefaultHttpPipelineOptions(credentials?: msRest.ServiceClientCredentials, options?: AzureServiceClientOptions): msRest.DefaultHttpPipelineOptions {
@@ -57,6 +62,10 @@ function createDefaultHttpPipelineOptions(credentials?: msRest.ServiceClientCred
 
     if (options.noRetryPolicy != undefined) {
       result.addRetryPolicies = !options.noRetryPolicy;
+    }
+
+    if (options.nodeJsUserAgentPackage != undefined) {
+      result.nodeJsUserAgentPackage = options.nodeJsUserAgentPackage;
     }
   }
 
