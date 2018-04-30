@@ -10,7 +10,7 @@ class TestAzureServiceClient extends AzureServiceClient {
 
 describe("AzureServiceClient", () => {
   it("should send requests when using the default Azure HTTP pipeline", async () => {
-    const azureServiceClient = new TestAzureServiceClient(new msRest.TokenCredentials("MY-FAKE-TOKEN"));
+    const azureServiceClient = new TestAzureServiceClient(new msRest.TokenCredentials("MY-FAKE-TOKEN"), "my-fake-subscriptionid");
 
     const httpRequest = new msRest.HttpRequest({ method: msRest.HttpMethod.GET, url: `${baseURL}/httpbin-index.html` });
 
