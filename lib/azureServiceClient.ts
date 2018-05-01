@@ -22,16 +22,16 @@ export interface AzureServiceClientOptions {
   generateClientRequestId?: boolean;
 
   /**
-   * @property {number} [options.longRunningOperationRetryTimeoutInSeconds] - Gets or sets the retry timeout in seconds for
+   * @property {number} [options.longRunningOperationRetryTimeout] - Gets or sets the retry timeout in seconds for
    * Long Running Operations. Default value is 30.
    */
-  longRunningOperationRetryTimeoutInSeconds?: number;
+  longRunningOperationRetryTimeout?: number;
 
   /**
-   * @property {number} [rpRegistrationRetryTimeoutInSeconds] - Gets or sets the retry timeout in seconds for
+   * @property {number} [rpRegistrationRetryTimeout] - Gets or sets the retry timeout in seconds for
    * AutomaticRPRegistration. Default value is 30 seconds.
    */
-  rpRegistrationRetryTimeoutInSeconds?: number;
+  rpRegistrationRetryTimeout?: number;
 
   /**
    * @property {bool} [noRetryPolicy] - If set to true, turn off the default retry policy.
@@ -56,8 +56,8 @@ function createDefaultHttpPipelineOptions(credentials?: msRest.ServiceClientCred
       result.generateClientRequestId = options.generateClientRequestId;
     }
 
-    if (options.rpRegistrationRetryTimeoutInSeconds != undefined) {
-      result.rpRegistrationRetryTimeoutInSeconds = options.rpRegistrationRetryTimeoutInSeconds;
+    if (options.rpRegistrationRetryTimeout != undefined) {
+      result.rpRegistrationRetryTimeout = options.rpRegistrationRetryTimeout;
     }
 
     if (options.noRetryPolicy != undefined) {
@@ -84,8 +84,8 @@ function createDefaultHttpPipelineOptions(credentials?: msRest.ServiceClientCred
 export class AzureServiceClient extends msRest.ServiceClient {
   public acceptLanguage: string = Constants.DEFAULT_LANGUAGE;
   public generateClientRequestId = true;
-  public longRunningOperationRetryTimeoutInSeconds = 30;
-  public rpRegistrationRetryTimeoutInSeconds = 30;
+  public longRunningOperationRetryTimeout = 30;
+  public rpRegistrationRetryTimeout = 30;
 
   constructor(credentials: msRest.ServiceClientCredentials, public subscriptionId: string, options?: AzureServiceClientOptions) {
     super(msRest.createDefaultHttpPipeline(createDefaultHttpPipelineOptions(credentials, options)));
@@ -99,12 +99,12 @@ export class AzureServiceClient extends msRest.ServiceClient {
         this.generateClientRequestId = options.generateClientRequestId;
       }
 
-      if (options.longRunningOperationRetryTimeoutInSeconds != undefined) {
-        this.longRunningOperationRetryTimeoutInSeconds = options.longRunningOperationRetryTimeoutInSeconds;
+      if (options.longRunningOperationRetryTimeout != undefined) {
+        this.longRunningOperationRetryTimeout = options.longRunningOperationRetryTimeout;
       }
 
-      if (options.rpRegistrationRetryTimeoutInSeconds != undefined) {
-        this.rpRegistrationRetryTimeoutInSeconds = options.rpRegistrationRetryTimeoutInSeconds;
+      if (options.rpRegistrationRetryTimeout != undefined) {
+        this.rpRegistrationRetryTimeout = options.rpRegistrationRetryTimeout;
       }
     }
   }
@@ -133,7 +133,7 @@ export class AzureServiceClient extends msRest.ServiceClient {
       throw new Error(`Unexpected polling status code from long running operation "${initialResponse.statusCode}" for method "${initialRequestMethod}".`);
     }
 
-    const pollingState = new PollingState(initialResponse, this.longRunningOperationRetryTimeoutInSeconds);
+    const pollingState = new PollingState(initialResponse, this.longRunningOperationRetryTimeout);
 
     const resourceUrl: string = initialResponse.request.url;
     while (![LroStates.Succeeded, LroStates.Failed, LroStates.Canceled].some((e) => { return e === pollingState.status; })) {
