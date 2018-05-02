@@ -9,7 +9,7 @@ const LroStates = Constants.LongRunningOperationStates;
 /**
  * Options to be provided while creating the client.
  */
-export interface AzureServiceClientOptions {
+export interface AzureServiceClientOptions extends msRest.ServiceClientOptions {
   /**
    * @property {string} [options.acceptLanguage] - Gets or sets the preferred language for the response. Default value is: "en-US".
    */
@@ -44,31 +44,16 @@ export interface AzureServiceClientOptions {
   nodeJsUserAgentPackage?: string;
 }
 
-function createDefaultHttpPipelineOptions(credentials?: msRest.ServiceClientCredentials, options?: AzureServiceClientOptions): msRest.DefaultHttpPipelineOptions {
-  const result: msRest.DefaultHttpPipelineOptions = {};
-
+function createServiceClientOptions(credentials: msRest.ServiceClientCredentials, options?: AzureServiceClientOptions): msRest.ServiceClientOptions {
+  const result: msRest.ServiceClientOptions = options || {};
   if (credentials) {
-    result.credentials = credentials;
-  }
-
-  if (options) {
-    if (options.generateClientRequestId != undefined) {
-      result.generateClientRequestId = options.generateClientRequestId;
+    if (!result.httpPipeline) {
+      result.httpPipeline = {};
     }
-
-    if (options.rpRegistrationRetryTimeout != undefined) {
-      result.rpRegistrationRetryTimeout = options.rpRegistrationRetryTimeout;
-    }
-
-    if (options.noRetryPolicy != undefined) {
-      result.addRetryPolicies = !options.noRetryPolicy;
-    }
-
-    if (options.nodeJsUserAgentPackage != undefined) {
-      result.nodeJsUserAgentPackage = options.nodeJsUserAgentPackage;
+    if (!(result.httpPipeline instanceof msRest.HttpPipeline)) {
+      result.httpPipeline.credentials = credentials;
     }
   }
-
   return result;
 }
 
@@ -88,7 +73,7 @@ export class AzureServiceClient extends msRest.ServiceClient {
   public rpRegistrationRetryTimeout = 30;
 
   constructor(credentials: msRest.ServiceClientCredentials, public subscriptionId: string, options?: AzureServiceClientOptions) {
-    super(msRest.createDefaultHttpPipeline(createDefaultHttpPipelineOptions(credentials, options)));
+    super(createServiceClientOptions(credentials, options));
 
     if (options) {
       if (options.acceptLanguage != undefined) {
